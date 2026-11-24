@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { AppConfig, IPCChannel, RuntimeInfo } from '@shared/types';
+import { IPC_CHANNELS } from '@shared/types';
 
 contextBridge.exposeInMainWorld('liteboxApi', {
   getConfig: () => ipcRenderer.invoke(IPC_CHANNELS.GET_CONFIG),

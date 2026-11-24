@@ -1,7 +1,9 @@
 node_modules
 dist
 .electron
+out/
 *.log
+dev-*.txt
 .LiteBox-Data/
 config.json
 npm-debug.log*

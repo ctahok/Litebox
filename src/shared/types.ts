@@ -124,7 +124,7 @@ export const IPC_CHANNELS = {
 
 export type IPCChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
 
-export declare global {
+declare global {
   interface Window {
     liteboxApi: {
       getConfig: () => Promise<AppConfig>;

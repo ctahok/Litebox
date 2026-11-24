@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import path from 'node:path';
 import type { AppConfig, RuntimeInfo, IPCChannel } from '@shared/types';
+import { IPC_CHANNELS } from '@shared/types';
 
 let mainWindow: BrowserWindow | null = null;
 
