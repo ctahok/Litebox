@@ -1,0 +1,9 @@
+node_modules
+dist
+.electron
+*.log
+.LiteBox-Data/
+config.json
+npm-debug.log*
+.DS_Thumbs
+Thumbs.db

@@ -1,0 +1,36 @@
+{
+  "name": "litebox",
+  "productName": "LiteBox",
+  "version": "0.1.0",
+  "description": "Privacy-focused desktop wrapper for WhatsApp Web, Telegram Web, and custom web applications",
+  "author": "LiteBox",
+  "license": "MIT",
+  "main": ".electron/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "test": "echo \"No tests yet - automated test suite added in Phase 6\" && exit 0",
+    "dist:win": "electron-vite build && electron-builder --win --x64"
+  },
+  "dependencies": {
+    "electron": "^33.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "lucide-react": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.0",
+    "electron-builder": "^25.0.0",
+    "electron-vite": "^2.0.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0"
+  }
+}
