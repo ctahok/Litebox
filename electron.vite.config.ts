@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
 const sharedAlias = {
+  '@': path.resolve(__dirname, 'src'),
   '@shared': path.resolve(__dirname, 'src/shared'),
   '@main': path.resolve(__dirname, 'src/main'),
   '@preload': path.resolve(__dirname, 'src/preload'),
