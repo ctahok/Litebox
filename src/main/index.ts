@@ -24,7 +24,7 @@ let currentConfig: AppConfig = readConfig(paths.userData);
 let mainWindow: BrowserWindow | null = null;
 let viewManager: ViewManager | null = null;
 
-function createWindow() {
+async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 840,
@@ -40,7 +40,10 @@ function createWindow() {
   });
 
   if (process.env.ELECTRON_RENDERER_URL || process.env.VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL ?? process.env.VITE_DEV_SERVER_URL!);
+    const url = process.env.ELECTRON_RENDERER_URL ?? process.env.VITE_DEV_SERVER_URL!;
+    // Wait for Vite dev server to be ready - longer delay for Vite to fully start
+    await new Promise(r => setTimeout(r, 10000));
+    mainWindow.loadURL(url);
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
@@ -73,8 +76,8 @@ function createWindow() {
   return mainWindow;
 }
 
-app.whenReady().then(() => {
-  createWindow();
+app.whenReady().then(async () => {
+  await createWindow();
   viewManager = new ViewManager(mainWindow!);
 
   ipcMain.handle(IPC_CHANNELS.GET_CONFIG, () => currentConfig);
@@ -121,8 +124,8 @@ app.whenReady().then(() => {
     nativeTheme.themeSource = theme;
   });
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  app.on('activate', async () => {
+    if (BrowserWindow.getAllWindows().length === 0) await createWindow();
   });
 });
 
