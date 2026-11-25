@@ -3,6 +3,7 @@ import type { ServiceTab, ProxyStatus, AppConfig } from '@shared/types';
 import { Sidebar } from './components/Sidebar';
 import { SettingsModal } from './components/SettingsModal';
 import { ProxyManagerModal } from './components/ProxyManagerModal';
+import { AddServiceModal } from './components/AddServiceModal';
 import { MessageCircle, Send, Globe } from 'lucide-react';
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
   const [config, setConfig] = useState<Partial<AppConfig> | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProxyManagerOpen, setIsProxyManagerOpen] = useState(false);
+  const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(220);
@@ -25,6 +27,13 @@ export default function App() {
 
     window.liteboxApi.getConfig().then((cfg) => {
       setConfig(cfg);
+
+      // Activate first service on startup
+      if (cfg.services && cfg.services.length > 0) {
+        const firstService = cfg.services[0];
+        setActiveServiceId(firstService.id);
+        window.liteboxApi.serviceActivate(firstService.id);
+      }
 
       window.liteboxApi.getNativeTheme().then((nativeTheme) => {
         document.documentElement.classList.remove('light', 'system-light', 'dark');
@@ -85,6 +94,13 @@ export default function App() {
     error: null,
   };
 
+  const handleServiceAdded = (service: ServiceTab) => {
+    window.liteboxApi.serviceAdd(service).then(() => {
+      setActiveServiceId(service.id);
+      window.liteboxApi.serviceActivate(service.id);
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans transition-colors duration-300">
       <Sidebar
@@ -92,8 +108,11 @@ export default function App() {
         onResizeStart={handleResizeStart}
         services={services}
         activeServiceId={activeServiceId}
-        onSelectService={(id) => setActiveServiceId(id)}
-        onAddService={() => {}}
+        onSelectService={(id) => {
+          setActiveServiceId(id);
+          window.liteboxApi.serviceActivate(id);
+        }}
+        onAddService={() => setIsAddServiceOpen(true)}
         onOpenProxyManager={() => setIsProxyManagerOpen(true)}
         onOpenSettings={() => {
           handleSetOverlayOpen(true);
@@ -171,6 +190,13 @@ export default function App() {
           setIsProxyManagerOpen(false);
         }}
         onSetOverlayOpen={handleSetOverlayOpen}
+      />
+
+      <AddServiceModal
+        open={isAddServiceOpen}
+        onClose={() => setIsAddServiceOpen(false)}
+        onSetOverlayOpen={handleSetOverlayOpen}
+        onServiceAdded={handleServiceAdded}
       />
     </div>
   );

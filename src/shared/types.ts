@@ -122,6 +122,10 @@ export const IPC_CHANNELS = {
   SET_OVERLAY_OPEN: 'ui:set-overlay-open',
   NATIVE_THEME_GET: 'native-theme:get',
   NATIVE_THEME_SET: 'native-theme:set',
+  SERVICE_ADD: 'service:add',
+  SERVICE_ACTIVATE: 'service:activate',
+  SERVICE_REMOVE: 'service:remove',
+  SERVICES_GET: 'services:get',
 } as const;
 
 export type IPCChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
@@ -135,6 +139,10 @@ declare global {
       setOverlayOpen: (open: boolean) => void;
       getNativeTheme: () => Promise<'light' | 'dark'>;
       setNativeTheme: (theme: 'light' | 'dark' | 'system') => void;
+      serviceAdd: (service: ServiceTab) => Promise<void>;
+      serviceActivate: (id: string) => Promise<void>;
+      serviceRemove: (id: string) => Promise<void>;
+      servicesGet: () => Promise<ServiceTab[]>;
     };
   }
 }

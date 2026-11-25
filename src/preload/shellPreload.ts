@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { AppConfig, IPCChannel, RuntimeInfo } from '@shared/types';
+import type { AppConfig, IPCChannel, RuntimeInfo, ServiceTab } from '@shared/types';
 import { IPC_CHANNELS } from '@shared/types';
 
 contextBridge.exposeInMainWorld('liteboxApi', {
@@ -10,4 +10,8 @@ contextBridge.exposeInMainWorld('liteboxApi', {
   getNativeTheme: () => ipcRenderer.invoke(IPC_CHANNELS.NATIVE_THEME_GET),
   setNativeTheme: (theme: 'light' | 'dark' | 'system') =>
     ipcRenderer.send(IPC_CHANNELS.NATIVE_THEME_SET, theme),
+  serviceAdd: (service: ServiceTab) => ipcRenderer.invoke(IPC_CHANNELS.SERVICE_ADD, service),
+  serviceActivate: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.SERVICE_ACTIVATE, id),
+  serviceRemove: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.SERVICE_REMOVE, id),
+  servicesGet: () => ipcRenderer.invoke(IPC_CHANNELS.SERVICES_GET),
 });
