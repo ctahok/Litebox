@@ -21,12 +21,21 @@ export default function App() {
 
   useEffect(() => {
     window.liteboxApi.getRuntimeInfo().then(setRuntime);
-    window.liteboxApi.getConfig().then(setConfig);
 
-    // Apply theme on mount
-    window.liteboxApi.getNativeTheme().then((theme) => {
-      document.documentElement.classList.remove('light', 'dark');
-      document.documentElement.classList.add(theme);
+    window.liteboxApi.getConfig().then((cfg) => {
+      setConfig(cfg);
+
+      // Apply theme on mount
+      window.liteboxApi.getNativeTheme().then((nativeTheme) => {
+        document.documentElement.classList.remove('light', 'system-light', 'dark');
+        if (cfg.theme === 'system') {
+          document.documentElement.classList.add(
+            nativeTheme === 'dark' ? 'dark' : 'system-light',
+          );
+        } else {
+          document.documentElement.classList.add(cfg.theme);
+        }
+      });
     });
   }, []);
 
@@ -39,7 +48,7 @@ export default function App() {
     document.documentElement.classList.remove('light', 'dark');
     if (theme === 'system') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.classList.add(isDark ? 'dark' : 'light');
+      document.documentElement.classList.add(isDark ? 'dark' : 'system-light');
     } else {
       document.documentElement.classList.add(theme);
     }

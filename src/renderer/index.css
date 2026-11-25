@@ -4,31 +4,58 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --primary-rgb: 23 23 23;
-    --secondary: 0 0% 90%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 85%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --accent-rgb: 245 245 245;
+    /* Light Theme — Green Palette */
+    --background: 140 25% 96%;
+    --foreground: 140 40% 15%;
+    --card: 140 25% 98%;
+    --card-foreground: 140 40% 15%;
+    --popover: 140 25% 96%;
+    --popover-foreground: 140 40% 15%;
+    --primary: 140 60% 35%;
+    --primary-foreground: 140 60% 95%;
+    --primary-rgb: 60 160 90;
+    --secondary: 140 20% 88%;
+    --secondary-foreground: 140 40% 20%;
+    --muted: 140 15% 80%;
+    --muted-foreground: 140 30% 45%;
+    --accent: 140 25% 90%;
+    --accent-foreground: 140 40% 15%;
+    --accent-rgb: 200 230 210;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 70%;
-    --input: 0 0% 80%;
-    --ring: 0 0% 3.9%;
+    --border: 140 20% 70%;
+    --input: 140 15% 75%;
+    --ring: 140 60% 35%;
     --radius: 0.625rem;
   }
 
+  /* System Theme — Blue Palette (when OS prefers light) */
+  .system-light {
+    --background: 210 25% 96%;
+    --foreground: 210 40% 15%;
+    --card: 210 25% 98%;
+    --card-foreground: 210 40% 15%;
+    --popover: 210 25% 96%;
+    --popover-foreground: 210 40% 15%;
+    --primary: 210 60% 35%;
+    --primary-foreground: 210 60% 95%;
+    --primary-rgb: 60 120 200;
+    --secondary: 210 20% 88%;
+    --secondary-foreground: 210 40% 20%;
+    --muted: 210 15% 80%;
+    --muted-foreground: 210 30% 45%;
+    --accent: 210 25% 90%;
+    --accent-foreground: 210 40% 15%;
+    --accent-rgb: 200 220 240;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 20% 70%;
+    --input: 210 15% 75%;
+    --ring: 210 60% 35%;
+  }
+
   .dark {
+    /* Dark Theme — Keep as is */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
