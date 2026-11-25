@@ -44,7 +44,9 @@ export function ProxyStatusPill({ status, onToggle, onOpenManager }: ProxyStatus
 
   const tooltipText = [
     status.activeProfileName ?? state.label,
-    status.type ? `${status.type.toUpperCase()}` : null,
+    status.mode === 'DIRECT'
+      ? 'Direct connection — no proxy, traffic goes straight to the internet (no leak protection)'
+      : status.type ? `${status.type.toUpperCase()}` : null,
     status.localSocksAddress ?? null,
     status.error ?? null,
   ]

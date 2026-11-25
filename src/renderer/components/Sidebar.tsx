@@ -86,7 +86,7 @@ export function Sidebar({
                 <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary" />
               )}
               <div className="flex items-center justify-center h-8 w-6 relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                <Icon className={`w-5 h-5 ${isActive ? 'text-primary bg-primary/20' : 'text-muted-foreground group-hover:text-foreground'}`} />
                 {service.muted && (
                   <VolumeX className="absolute bottom-0 left-0 w-3 h-3 text-muted-foreground" />
                 )}

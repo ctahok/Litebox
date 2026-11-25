@@ -3,6 +3,7 @@ import type { ServiceTab, ProxyStatus, AppConfig } from '@shared/types';
 import { Sidebar } from './components/Sidebar';
 import { SettingsModal } from './components/SettingsModal';
 import { ProxyManagerModal } from './components/ProxyManagerModal';
+import { MessageCircle, Send, Globe } from 'lucide-react';
 
 export default function App() {
   const [runtime, setRuntime] = useState<{
@@ -109,26 +110,67 @@ export default function App() {
         onMouseDown={handleResizeStart}
       />
 
-      {/* Main viewport (placeholder for WebContentsView) */}
+      {/* Main viewport with service tabs */}
       <div
-        className="fixed top-0 right-0 bottom-0 bg-background flex items-center justify-center z-0"
+        className="fixed top-0 right-0 bottom-0 bg-background z-0 flex flex-col"
         style={{ left: `${sidebarWidth}px` }}
       >
-        <div className="text-center">
-          <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center mx-auto mb-4 border border-border">
-            📦
-          </div>
-          <h2 className="text-xl font-semibold text-foreground mb-2">LiteBox</h2>
-          <p className="text-muted-foreground text-sm">
-            Web service viewport — WebContentsView embeds render here
-          </p>
-          {runtime && (
-            <div className="mt-6 text-xs text-muted-foreground space-y-1">
-              <div>Electron: {runtime.electron}</div>
-              <div>Chromium: {runtime.chrome}</div>
-              <div>Node: {runtime.node}</div>
-              <div>Portable: {String(runtime.isPortable)}</div>
-              <div>Data Path: {runtime.dataPath}</div>
+        {/* Service tab bar */}
+        <div className="flex items-center gap-1 px-4 py-3 border-b border-border bg-background/50">
+          {services.map((service) => {
+            const isActive = activeServiceId === service.id;
+            return (
+              <button
+                key={service.id}
+                onClick={() => setActiveServiceId(service.id)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground'
+                }`}
+              >
+                {service.preset === 'whatsapp' && <MessageCircle className="w-4 h-4" />}
+                {service.preset === 'telegram' && <Send className="w-4 h-4" />}
+                {service.preset === 'custom' && <Globe className="w-4 h-4" />}
+                <span>{service.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* WebContentsView area (placeholder for actual views) */}
+        <div className="flex-1 flex items-center justify-center bg-background">
+          {activeServiceId ? (
+            <div className="text-center">
+              <div className="w-20 h-20 rounded-full bg-card flex items-center justify-center mx-auto mb-4 border border-border">
+                {(() => {
+                  const svc = services.find((s) => s.id === activeServiceId);
+                  if (!svc) return null;
+                  if (svc.preset === 'whatsapp') {
+                    return <MessageCircle className="w-8 h-8 text-muted-foreground" />;
+                  }
+                  if (svc.preset === 'telegram') {
+                    return <Send className="w-8 h-8 text-muted-foreground" />;
+                  }
+                  return <Globe className="w-8 h-8 text-muted-foreground" />;
+                })()}
+              </div>
+              <h2 className="text-xl font-semibold text-foreground mb-2">
+                {services.find((s) => s.id === activeServiceId)?.name}
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                WebContentsView embed renders here — ready for proxy/tunnel routing
+              </p>
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center mx-auto mb-4 border border-border">
+                📦
+              </div>
+              <h2 className="text-xl font-semibold text-foreground mb-2">LiteBox</h2>
+              <p className="text-muted-foreground text-sm">
+                Select a service from the sidebar to begin
+              </p>
             </div>
           )}
         </div>
