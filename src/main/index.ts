@@ -2,18 +2,21 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import path from 'node:path';
 import type { AppConfig, RuntimeInfo, IPCChannel } from '@shared/types';
 import { IPC_CHANNELS } from '@shared/types';
+import { resolvePaths } from './paths';
+import {
+  readConfig,
+  writeConfig,
+  getDefaultConfig,
+} from './configStore';
+
+// --- Portable vs. installed path resolution (BEFORE app.whenReady) ---
+const paths = resolvePaths();
+app.setPath('userData', paths.userData);
+
+// --- Config store (atomic read/write, corruption recovery) ---
+let currentConfig: AppConfig = readConfig(paths.userData);
 
 let mainWindow: BrowserWindow | null = null;
-
-const DEFAULT_CONFIG: AppConfig = {
-  version: 1,
-  theme: 'system',
-  window: { width: 1280, height: 840, minimizeToTray: true, closeToTray: true, launchOnStartup: false },
-  hibernation: { enabled: true, timeoutMinutes: 30 },
-  privacy: { blockWebRtcNonProxiedUdp: true },
-  proxy: { enabled: false, activeProfileId: null, profiles: [], sshHosts: [] },
-  services: [],
-};
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -30,8 +33,8 @@ function createWindow() {
     },
   });
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+  if (process.env.ELECTRON_RENDERER_URL || process.env.VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL ?? process.env.VITE_DEV_SERVER_URL!);
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
@@ -57,9 +60,10 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
 
-  ipcMain.handle(IPC_CHANNELS.GET_CONFIG, () => DEFAULT_CONFIG);
+  ipcMain.handle(IPC_CHANNELS.GET_CONFIG, () => currentConfig);
   ipcMain.handle(IPC_CHANNELS.UPDATE_CONFIG, (_e, patch: Partial<AppConfig>) => {
-    Object.assign(DEFAULT_CONFIG, patch);
+    currentConfig = { ...currentConfig, ...patch };
+    writeConfig(paths.userData, currentConfig);
   });
   ipcMain.handle(IPC_CHANNELS.GET_RUNTIME_INFO, (): RuntimeInfo => {
     const { versions } = process;
@@ -67,8 +71,8 @@ app.whenReady().then(() => {
       electron: versions.electron ?? '',
       chrome: versions.chrome ?? '',
       node: versions.node ?? '',
-      isPortable: false,
-      dataPath: '',
+      isPortable: paths.isPortable,
+      dataPath: paths.userData,
     };
   });
   ipcMain.on(IPC_CHANNELS.SET_OVERLAY_OPEN, (_e, open: boolean) => {

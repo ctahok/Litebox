@@ -4,7 +4,7 @@ dist
 out/
 *.log
 dev-*.txt
-.LiteBox-Data/
+LiteBox-Data/
 config.json
 npm-debug.log*
 .DS_Thumbs
