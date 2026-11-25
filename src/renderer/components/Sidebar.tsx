@@ -13,10 +13,13 @@ import type { ServiceTab } from '@shared/types';
 import { Button } from '@/renderer/components/ui/button';
 import { Badge } from '@/renderer/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/renderer/components/ui/tooltip';
+import { ProxyStatusPill } from './ProxyStatusPill';
 
 type LucideIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 interface SidebarProps {
+  sidebarWidth: number;
+  onResizeStart: () => void;
   services: ServiceTab[];
   activeServiceId: string | null;
   onSelectService: (id: string) => void;
@@ -33,6 +36,8 @@ const PRESET_ICONS: Record<string, LucideIcon> = {
 };
 
 export function Sidebar({
+  sidebarWidth,
+  onResizeStart,
   services,
   activeServiceId,
   onSelectService,
@@ -48,7 +53,19 @@ export function Sidebar({
   );
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-17 bg-background border-r border-border flex flex-col z-20">
+    <aside
+      className="fixed left-0 top-0 bottom-0 bg-background border-r border-border flex flex-col z-20"
+      style={{ width: `${sidebarWidth}px` }}
+    >
+      {/* Proxy Status Pill at top of rail */}
+      <div className="px-2 pt-3 pb-2">
+        <ProxyStatusPill
+          status={{ mode: 'DIRECT', activeProfileId: null, activeProfileName: null, type: null, localSocksAddress: null, tunnelState: 'idle', error: null }}
+          onToggle={() => {}}
+          onOpenManager={onOpenProxyManager}
+        />
+      </div>
+
       {/* Service list (scrollable) */}
       <div className="flex-1 overflow-y-auto p-3 gap-2">
         {services.map((service) => {
@@ -143,6 +160,13 @@ export function Sidebar({
           </TooltipProvider>
         </div>
       </div>
+
+      {/* Resize handle */}
+      <div
+        className="absolute top-0 bottom-0 w-2 cursor-ew-resize z-10 bg-transparent"
+        style={{ right: 0 }}
+        onMouseDown={onResizeStart}
+      />
     </aside>
   );
 }

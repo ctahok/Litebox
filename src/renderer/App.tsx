@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ServiceTab, ProxyStatus, AppConfig } from '@shared/types';
 import { Sidebar } from './components/Sidebar';
-import { ProxyStatusPill } from './components/ProxyStatusPill';
 import { SettingsModal } from './components/SettingsModal';
 import { ProxyManagerModal } from './components/ProxyManagerModal';
 
@@ -18,6 +17,7 @@ export default function App() {
   const [isProxyManagerOpen, setIsProxyManagerOpen] = useState(false);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
+  const [sidebarWidth, setSidebarWidth] = useState(68);
 
   useEffect(() => {
     window.liteboxApi.getRuntimeInfo().then(setRuntime);
@@ -47,6 +47,24 @@ export default function App() {
     window.liteboxApi.updateConfig({ theme });
   };
 
+  const handleResizeStart = useCallback(() => {
+    window.addEventListener('mousemove', handleResizeMove);
+    window.addEventListener('mouseup', handleResizeEnd);
+  }, []);
+
+  const handleResizeMove = useCallback(
+    (e: MouseEvent) => {
+      const width = Math.max(68, Math.min(300, e.clientX));
+      setSidebarWidth(width);
+    },
+    [],
+  );
+
+  const handleResizeEnd = useCallback(() => {
+    window.removeEventListener('mousemove', handleResizeMove);
+    window.removeEventListener('mouseup', handleResizeEnd);
+  }, [handleResizeMove]);
+
   const services = config?.services ?? [];
   const proxyStatus: ProxyStatus = {
     mode: 'DIRECT',
@@ -60,29 +78,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans transition-colors duration-300">
-      {/* Top area: Proxy Status Pill */}
-      <div className="fixed top-4 left-20 right-4 z-30 flex justify-between px-2">
-        <ProxyStatusPill
-          status={proxyStatus}
-          onToggle={() => {}}
-          onOpenManager={() => setIsProxyManagerOpen(true)}
-        />
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              handleSetOverlayOpen(true);
-              setIsSettingsOpen(true);
-            }}
-            className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground"
-            aria-label="Settings"
-          >
-            ⚙️
-          </button>
-        </div>
-      </div>
-
       {/* Rail */}
       <Sidebar
+        sidebarWidth={sidebarWidth}
+        onResizeStart={handleResizeStart}
         services={services}
         activeServiceId={activeServiceId}
         onSelectService={(id) => setActiveServiceId(id)}
@@ -94,8 +93,18 @@ export default function App() {
         }}
       />
 
+      {/* Resizable divider */}
+      <div
+        className="fixed top-0 bottom-0 w-1 cursor-ew-resize z-30 bg-transparent"
+        style={{ left: `${sidebarWidth}px` }}
+        onMouseDown={handleResizeStart}
+      />
+
       {/* Main viewport (placeholder for WebContentsView) */}
-      <div className="fixed left-17 top-0 right-0 bottom-0 bg-background flex items-center justify-center z-0">
+      <div
+        className="fixed top-0 right-0 bottom-0 bg-background flex items-center justify-center z-0"
+        style={{ left: `${sidebarWidth}px` }}
+      >
         <div className="text-center">
           <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center mx-auto mb-4 border border-border">
             📦
