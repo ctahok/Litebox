@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, nativeTheme } from 'electron';
 import path from 'node:path';
 import type { AppConfig, RuntimeInfo, IPCChannel } from '@shared/types';
 import { IPC_CHANNELS } from '@shared/types';
@@ -78,6 +78,12 @@ app.whenReady().then(() => {
   ipcMain.on(IPC_CHANNELS.SET_OVERLAY_OPEN, (_e, open: boolean) => {
     // Overlay protocol - WebContentsView detach/attach handled in viewManager (Phase 2)
     void open;
+  });
+  ipcMain.handle(IPC_CHANNELS.NATIVE_THEME_GET, () => {
+    return nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+  });
+  ipcMain.handle(IPC_CHANNELS.NATIVE_THEME_SET, (_e, theme: 'light' | 'dark' | 'system') => {
+    nativeTheme.themeSource = theme;
   });
 
   app.on('activate', () => {

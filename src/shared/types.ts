@@ -120,6 +120,8 @@ export const IPC_CHANNELS = {
   UPDATE_CONFIG: 'config:update',
   GET_RUNTIME_INFO: 'runtime:get',
   SET_OVERLAY_OPEN: 'ui:set-overlay-open',
+  NATIVE_THEME_GET: 'native-theme:get',
+  NATIVE_THEME_SET: 'native-theme:set',
 } as const;
 
 export type IPCChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
@@ -131,6 +133,8 @@ declare global {
       updateConfig: (patch: Partial<AppConfig>) => Promise<void>;
       getRuntimeInfo: () => Promise<RuntimeInfo>;
       setOverlayOpen: (open: boolean) => void;
+      getNativeTheme: () => Promise<'light' | 'dark'>;
+      setNativeTheme: (theme: 'light' | 'dark' | 'system') => void;
     };
   }
 }

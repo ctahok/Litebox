@@ -7,4 +7,7 @@ contextBridge.exposeInMainWorld('liteboxApi', {
   updateConfig: (patch: Partial<AppConfig>) => ipcRenderer.invoke(IPC_CHANNELS.UPDATE_CONFIG, patch),
   getRuntimeInfo: () => ipcRenderer.invoke(IPC_CHANNELS.GET_RUNTIME_INFO),
   setOverlayOpen: (open: boolean) => ipcRenderer.send(IPC_CHANNELS.SET_OVERLAY_OPEN, open),
+  getNativeTheme: () => ipcRenderer.invoke(IPC_CHANNELS.NATIVE_THEME_GET),
+  setNativeTheme: (theme: 'light' | 'dark' | 'system') =>
+    ipcRenderer.send(IPC_CHANNELS.NATIVE_THEME_SET, theme),
 });
