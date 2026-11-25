@@ -119,7 +119,7 @@ export function SettingsModal({
                   className={`h-8 w-8 rounded-md flex items-center justify-center text-xs font-medium transition-all ${
                     theme === t
                       ? 'bg-primary text-primary-foreground shadow-[0_0_10px_rgba(var(--primary-rgb),0.4)]'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                      : 'bg-muted text-secondary-foreground hover:bg-muted/80 hover:text-foreground'
                   }`}
                   aria-label={t.charAt(0).toUpperCase() + t.slice(1)}
                 >
