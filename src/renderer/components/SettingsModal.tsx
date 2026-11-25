@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react';
-import { X, Sun, Moon, Monitor, Clock, ToggleRight, ToggleLeft } from 'lucide-react';
+import { Sun, Moon, Monitor } from 'lucide-react';
 import type { AppConfig } from '@shared/types';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/renderer/components/ui/dialog';
+import { Switch } from '@/renderer/components/ui/switch';
+import { Separator } from '@/renderer/components/ui/separator';
+import { Label } from '@/renderer/components/ui/label';
+import { Badge } from '@/renderer/components/ui/badge';
+import { Button } from '@/renderer/components/ui/button';
 
 interface SettingsModalProps {
   open: boolean;
@@ -19,8 +33,6 @@ export function SettingsModal({
   onUpdateConfig,
   onSetOverlayOpen,
 }: SettingsModalProps) {
-  if (!open) return null;
-
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(
     (config.theme as 'light' | 'dark' | 'system') ?? 'system'
   );
@@ -75,106 +87,110 @@ export function SettingsModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={() => {
-          onSetOverlayOpen(false);
-          onClose();
-        }}
-      />
+    <Dialog open={open} onOpenChange={(open: boolean) => {
+      if (!open) {
+        onSetOverlayOpen(false);
+        onClose();
+      }
+    }}>
+      <DialogTrigger asChild>
+        <span />
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Settings</DialogTitle>
+          <DialogDescription>
+            Configure LiteBox appearance and behavior
+          </DialogDescription>
+        </DialogHeader>
+        <Separator className="my-4" />
+        <div className="grid gap-4 p-4">
+          {/* Theme Section */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Theme</Label>
+            <p className="text-xs text-muted-foreground">
+              Appearance for the LiteBox shell
+            </p>
+            <div className="flex gap-1">
+              {['light', 'dark', 'system'].map((t) => (
+                <Button
+                  key={t}
+                  onClick={() => handleThemeChange(t as 'light' | 'dark' | 'system')}
+                  className={`h-8 w-8 rounded-md flex items-center justify-center text-xs font-medium transition-all ${
+                    theme === t
+                      ? 'bg-primary text-primary-foreground shadow-[0_0_10px_rgba(var(--primary-rgb),0.4)]'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                  }`}
+                  aria-label={t.charAt(0).toUpperCase() + t.slice(1)}
+                >
+                  {t === 'light' && <Sun className="w-4 h-4" />}
+                  {t === 'dark' && <Moon className="w-4 h-4" />}
+                  {t === 'system' && <Monitor className="w-4 h-4" />}
+                </Button>
+              ))}
+            </div>
+          </div>
 
-      <div className="relative bg-gray-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-white">Settings</h2>
-          <button
-            onClick={() => {
-              onSetOverlayOpen(false);
-              onClose();
-            }}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+          <Separator className="my-4" />
 
-        <div className="space-y-5">
-          <div className="space-y-2">
+          {/* Tab Hibernation Section - Redesigned with shadcn Switch */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-gray-300">Theme</h3>
-                <p className="text-xs text-gray-500">Appearance for the LiteBox shell</p>
+                <Label className="text-sm font-medium">Tab Hibernation</Label>
+                <p className="text-xs text-muted-foreground">
+                  Automatically hibernate inactive tabs to save memory
+                </p>
               </div>
-              <div className="flex gap-1">
-                {['light', 'dark', 'system'].map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => handleThemeChange(t as 'light' | 'dark' | 'system')}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium transition-all ${
-                      theme === t
-                        ? 'bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
-                    }`}
-                    title={t.charAt(0).toUpperCase() + t.slice(1)}
-                  >
-                    {t === 'light' && <Sun className="w-4 h-4" />}
-                    {t === 'dark' && <Moon className="w-4 h-4" />}
-                    {t === 'system' && <Monitor className="w-4 h-4" />}
-                  </button>
-                ))}
-              </div>
+              <Switch
+                checked={hibernationEnabled}
+                onCheckedChange={handleHibernationToggle}
+                className="h-9 w-12"
+              />
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-300">Tab Hibernation</h3>
-                  <p className="text-xs text-gray-500">Automatically hibernate inactive tabs</p>
-                </div>
-                <button
-                  onClick={handleHibernationToggle}
-                  className={`relative inline-flex w-11 h-6 shrink-0 cursor-pointer rounded-full transition-colors ${
-                    hibernationEnabled ? 'bg-blue-600' : 'bg-gray-700'
-                  }`}
-                >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    hibernationEnabled ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-400">Timeout:</span>
-                <div className="flex gap-1">
-                  {TIMEOUT_OPTIONS.map((m) => (
-                    <button
-                      key={m}
-                      disabled={!hibernationEnabled}
-                      onClick={() => handleTimeoutChange(m)}
-                      className={`w-8 h-8 rounded-lg text-xs font-medium transition-all disabled:opacity-50 disabled:pointer-events-none ${
-                        timeoutMinutes === m
-                          ? 'bg-blue-600 text-white'
-                          : hibernationEnabled
-                          ? 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
-                          : 'bg-gray-800 text-gray-500'
-                      }`}
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
+            <div className="flex items-center gap-3 pl-8">
+              <Label className="text-sm text-muted-foreground">Timeout:</Label>
+              <div className="flex gap-1">
+                {TIMEOUT_OPTIONS.map((m) => (
+                  <Button
+                    key={m}
+                    disabled={!hibernationEnabled}
+                    onClick={() => handleTimeoutChange(m)}
+                    className={`h-9 w-9 rounded-md text-xs font-medium transition-all disabled:opacity-50 disabled:pointer-events-none ${
+                      timeoutMinutes === m
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {m}
+                  </Button>
+                ))}
               </div>
             </div>
           </div>
         </div>
-
-        <div className="mt-8 text-[10px] text-gray-500">
-          Proxy & SSH Tunnel settings are available from the Proxy Manager.
-        </div>
-      </div>
-    </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onSetOverlayOpen(false);
+              onClose();
+            }}
+            className="h-9 whitespace-nowrap shrink-0"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              onSetOverlayOpen(false);
+              onClose();
+            }}
+            className="h-9 whitespace-nowrap shrink-0"
+          >
+            Done
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

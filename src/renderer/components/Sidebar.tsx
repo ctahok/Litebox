@@ -10,6 +10,9 @@ import {
   VolumeX,
 } from 'lucide-react';
 import type { ServiceTab } from '@shared/types';
+import { Button } from '@/renderer/components/ui/button';
+import { Badge } from '@/renderer/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/renderer/components/ui/tooltip';
 
 type LucideIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
@@ -45,9 +48,9 @@ export function Sidebar({
   );
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-17 bg-gray-900 border-r border-white/10 flex flex-col z-20">
+    <aside className="fixed left-0 top-0 bottom-0 w-17 bg-background border-r border-border flex flex-col z-20">
       {/* Service list (scrollable) */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-3 gap-2">
         {services.map((service) => {
           const isActive = activeServiceId === service.id;
           const Icon = PRESET_ICONS[service.preset] ?? Globe;
@@ -55,32 +58,30 @@ export function Sidebar({
             <div
               key={service.id}
               onClick={() => handleServiceClick(service.id)}
-              className={`relative group cursor-pointer rounded-lg p-2 transition-colors ${
+              className={`relative group cursor-pointer rounded-md p-2 transition-colors ${
                 isActive
-                  ? 'bg-gray-800 border-r-2 border-blue-500'
-                  : 'hover:bg-gray-800'
+                  ? 'bg-accent text-accent-foreground border-r-2 border-primary'
+                  : 'hover:bg-muted'
               }`}
             >
               {/* Active bar */}
               {isActive && (
-                <div className="absolute right-0 top-0 bottom-0 w-1 bg-blue-500" />
+                <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary" />
               )}
               <div className="flex items-center justify-center h-8 w-6 relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-gray-200'}`} />
+                <Icon className={`w-5 h-5 ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
                 {service.muted && (
-                  <VolumeX className="absolute bottom-0 left-0 w-3 h-3 text-gray-400" />
+                  <VolumeX className="absolute bottom-0 left-0 w-3 h-3 text-muted-foreground" />
                 )}
                 {service.hibernated && (
-                  <Moon className="absolute bottom-0 right-0 w-3 h-3 text-gray-500" />
+                  <Moon className="absolute bottom-0 right-0 w-3 h-3 text-muted-foreground" />
                 )}
                 {service.unreadCount && service.unreadCount > 0 && (
-                  <span className={`absolute top-0 right-0 ${
+                  <Badge variant="destructive" className={`absolute top-0 right-0 ${
                     service.unreadCount > 99 ? 'w-5 h-5' : 'w-3 h-3'
-                  } rounded-full bg-red-500 text-xs text-white flex items-center justify-center ${
-                    service.unreadCount > 99 ? 'text-[10px]' : ''
-                  }`}>
+                  } ${service.unreadCount > 99 ? 'text-[10px]' : ''}`}>
                     {service.unreadCount > 99 ? '99+' : service.unreadCount}
-                  </span>
+                  </Badge>
                 )}
               </div>
             </div>
@@ -88,34 +89,58 @@ export function Sidebar({
         })}
       </div>
 
-      <div className="h-1 bg-gray-800/50 my-3" />
+      <div className="h-1 bg-border my-3" />
 
       {/* Add Service button */}
-      <button
-        onClick={onAddService}
-        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition-colors border border-white/10"
-      >
-        <Plus className="w-4 h-4" />
-        <span>Add</span>
-      </button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={onAddService}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium border border-input transition-colors whitespace-nowrap shrink-0"
+              size="sm"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Service</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Add a new web service</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
-      <div className="mt-auto border-t border-white/10 pt-3 pb-2">
+      <div className="mt-auto border-t border-border pt-3 pb-2">
         {/* Bottom pinned buttons */}
-        <div className="flex items-center justify-between px-3 space-y-2">
-          <button
-            onClick={onOpenProxyManager}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
-            title="Proxy & SSH Tunnels"
-          >
-            <Shield className="w-5 h-5" />
-          </button>
-          <button
-            onClick={onOpenSettings}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
-            title="Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
+        <div className="flex items-center justify-between px-3 gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={onOpenProxyManager}
+                  className="h-8 w-8 p-0 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
+                  size="icon"
+                  aria-label="Proxy & SSH Tunnels"
+                >
+                  <Shield className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Proxy & SSH Tunnels</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={onOpenSettings}
+                  className="h-8 w-8 p-0 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
+                  size="icon"
+                  aria-label="Settings"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Settings</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
     </aside>
