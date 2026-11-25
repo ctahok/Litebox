@@ -61,7 +61,7 @@ export function Sidebar({
               className={`relative group cursor-pointer rounded-md p-2 transition-colors ${
                 isActive
                   ? 'bg-accent text-accent-foreground border-r-2 border-primary'
-                  : 'hover:bg-muted'
+                  : 'hover:bg-secondary'
               }`}
             >
               {/* Active bar */}

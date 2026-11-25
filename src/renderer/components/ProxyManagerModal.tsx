@@ -157,7 +157,7 @@ export function ProxyManagerModal({
                 {MOCK_PROFILES.map((profile) => (
                   <div
                     key={profile.id}
-                    className="flex items-center gap-4 px-3 py-2 rounded-md border border-border hover:bg-muted transition-colors"
+                    className="flex items-center gap-4 px-3 py-2 rounded-md border border-border hover:bg-secondary transition-colors"
                   >
                     <Switch checked={profile.id === 'profile-1'} onCheckedChange={() => {}} className="h-8 shrink-0" />
                     <div className="min-w-0 flex-1">
@@ -237,7 +237,7 @@ export function ProxyManagerModal({
                 {MOCK_SSH_HOSTS.map((host) => (
                   <div
                     key={host.id}
-                    className="flex items-center gap-4 px-3 py-2 rounded-md border border-border hover:bg-muted transition-colors"
+                    className="flex items-center gap-4 px-3 py-2 rounded-md border border-border hover:bg-secondary transition-colors"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1">

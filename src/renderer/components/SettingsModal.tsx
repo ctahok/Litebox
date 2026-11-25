@@ -119,7 +119,7 @@ export function SettingsModal({
                   className={`h-8 w-8 rounded-md flex items-center justify-center text-xs font-medium transition-all ${
                     theme === t
                       ? 'bg-primary text-primary-foreground shadow-[0_0_10px_rgba(var(--primary-rgb),0.4)]'
-                      : 'bg-muted text-secondary-foreground hover:bg-muted/80 hover:text-foreground'
+                      : 'bg-muted text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground'
                   }`}
                   aria-label={t.charAt(0).toUpperCase() + t.slice(1)}
                 >
@@ -156,10 +156,10 @@ export function SettingsModal({
                     key={m}
                     disabled={!hibernationEnabled}
                     onClick={() => handleTimeoutChange(m)}
-                    className={`h-9 w-9 rounded-md text-xs font-medium transition-all disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`h-9 w-9 rounded-md text-xs font-medium transition-all disabled:text-muted-foreground disabled:bg-muted/50 disabled:pointer-events-none ${
                       timeoutMinutes === m
                         ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-secondary-foreground'
                     }`}
                   >
                     {m}
