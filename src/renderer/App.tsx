@@ -21,36 +21,35 @@ export default function App() {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(220);
+  const [apiReady, setApiReady] = useState(false);
 
   useEffect(() => {
-    window.liteboxApi.getRuntimeInfo().then(setRuntime);
-
-    window.liteboxApi.getConfig().then((cfg) => {
-      setConfig(cfg);
-
-      // Activate first service on startup
-      if (cfg.services && cfg.services.length > 0) {
-        const firstService = cfg.services[0];
-        setActiveServiceId(firstService.id);
-        window.liteboxApi.serviceActivate(firstService.id);
-      }
-
-      window.liteboxApi.getNativeTheme().then((nativeTheme) => {
-        document.documentElement.classList.remove('light', 'system-light', 'dark');
-        if (cfg.theme === 'system') {
-          document.documentElement.classList.add(
-            nativeTheme === 'dark' ? 'dark' : 'system-light',
-          );
-        } else {
-          document.documentElement.classList.add(cfg.theme);
+    const init = async () => {
+      try {
+        if (!window.liteboxApi) { console.error('window.liteboxApi is not defined!'); setApiReady(true); return; }
+        const [rt, cfg] = await Promise.all([window.liteboxApi.getRuntimeInfo(), window.liteboxApi.getConfig()]);
+        console.log('runtime:', rt); console.log('config:', cfg);
+        setRuntime(rt); setConfig(cfg);
+        if (cfg.services && cfg.services.length > 0) {
+          const firstService = cfg.services[0];
+          setActiveServiceId(firstService.id);
+          try { await window.liteboxApi.serviceActivate(firstService.id); } catch (e) { console.error('serviceActivate failed:', e); }
         }
-      });
-    });
+        try {
+          const nativeTheme = await window.liteboxApi.getNativeTheme();
+          document.documentElement.classList.remove('light', 'system-light', 'dark');
+          if (cfg.theme === 'system') { document.documentElement.classList.add(nativeTheme === 'dark' ? 'dark' : 'system-light'); }
+          else { document.documentElement.classList.add(cfg.theme); }
+        } catch (e) { console.error('getNativeTheme failed:', e); }
+        setApiReady(true);
+      } catch (err) { console.error('App init failed:', err); setApiReady(true); }
+    };
+    init();
   }, []);
 
   const handleSetOverlayOpen = (open: boolean) => {
     setIsOverlayOpen(open);
-    window.liteboxApi.setOverlayOpen(open);
+    window.liteboxApi?.setOverlayOpen?.(open);
   };
 
   const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
@@ -61,8 +60,8 @@ export default function App() {
     } else {
       document.documentElement.classList.add(theme);
     }
-    window.liteboxApi.setNativeTheme(theme);
-    window.liteboxApi.updateConfig({ theme });
+    window.liteboxApi?.setNativeTheme?.(theme);
+    window.liteboxApi?.updateConfig?.({ theme });
   };
 
   const handleResizeStart = useCallback(() => {
@@ -95,9 +94,9 @@ export default function App() {
   };
 
   const handleServiceAdded = (service: ServiceTab) => {
-    window.liteboxApi.serviceAdd(service).then(() => {
+    window.liteboxApi?.serviceAdd?.(service).then(() => {
       setActiveServiceId(service.id);
-      window.liteboxApi.serviceActivate(service.id);
+      window.liteboxApi?.serviceActivate?.(service.id);
     });
   };
 
@@ -110,7 +109,7 @@ export default function App() {
         activeServiceId={activeServiceId}
         onSelectService={(id) => {
           setActiveServiceId(id);
-          window.liteboxApi.serviceActivate(id);
+          window.liteboxApi?.serviceActivate?.(id);
         }}
         onAddService={() => setIsAddServiceOpen(true)}
         onOpenProxyManager={() => setIsProxyManagerOpen(true)}
