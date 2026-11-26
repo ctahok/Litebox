@@ -114,7 +114,6 @@ export function Sidebar({
             <Button
               onClick={onAddService}
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold border border-input transition-colors whitespace-nowrap shrink-0"
-              size="sm"
             >
               <Plus className="w-4 h-4 shrink-0" />
               <span>Add Service</span>

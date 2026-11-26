@@ -53,7 +53,7 @@ export default function App() {
   };
 
   const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
-    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.remove('light', 'dark', 'system-light');
     if (theme === 'system') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       document.documentElement.classList.add(isDark ? 'dark' : 'system-light');
